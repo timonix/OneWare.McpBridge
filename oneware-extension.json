@@ -5,6 +5,7 @@
   "id": "OneWare.McpBridge",
   "description": "Exposes OneWare Studio's AI tools to external MCP clients",
   "license": "MIT",
+  "iconUrl": "https://raw.githubusercontent.com/timonix/OneWare.McpBridge/main/Icon.png",
   "tabs": [
     {
       "title": "Readme",

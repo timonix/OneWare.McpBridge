@@ -1,3 +1,5 @@
+![image](https://raw.githubusercontent.com/timonix/OneWare.McpBridge/main/Icon.png)
+
 # MCP Bridge
 
 ## Overview
@@ -16,3 +18,5 @@ assistant uses.
   start and stop the server there, and turn tool groups or single tools on and off under **Tools**.
 - `readFile`, `editFile` and `runTerminalCommand` are off by default. Turn them on in the MCP Bridge window if you want
   clients to use them.
+- The port can be changed in **Settings → Tools → MCP Bridge** (default 3917). Stop and start the server in the
+  MCP Bridge window to apply it.

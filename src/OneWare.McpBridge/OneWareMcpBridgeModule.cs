@@ -21,7 +21,12 @@ public class OneWareMcpBridgeModule : OneWareModuleBase
 
     public override void Initialize(IServiceProvider serviceProvider)
     {
-        serviceProvider.Resolve<ISettingsService>().Register(McpBridgeService.PortSetting, McpBridgeService.DefaultPort);
+        serviceProvider.Resolve<ISettingsService>().RegisterSetting("Tools", "MCP Bridge", McpBridgeService.PortSetting,
+            new TextBoxSetting("Port", McpBridgeService.DefaultPort, McpBridgeService.DefaultPort.ToString())
+            {
+                HoverDescription = "Port the MCP server listens on (http://localhost:<port>/mcp). " +
+                                   "Takes effect after stopping and starting the server in the MCP Bridge window."
+            });
 
         var dockService = serviceProvider.Resolve<IMainDockService>();
         dockService.RegisterLayoutExtension<McpBridgeViewModel>(DockShowLocation.Bottom);
