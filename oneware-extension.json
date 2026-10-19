@@ -1,0 +1,36 @@
+{
+  "category": "Tools",
+  "type": "Plugin",
+  "name": "MCP Bridge",
+  "id": "OneWare.McpBridge",
+  "description": "Exposes OneWare Studio's AI tools to external MCP clients",
+  "license": "MIT",
+  "tabs": [
+    {
+      "title": "Readme",
+      "contentUrl": "https://raw.githubusercontent.com/timonix/OneWare.McpBridge/main/Extension.md"
+    },
+    {
+      "title": "License",
+      "contentUrl": "https://raw.githubusercontent.com/timonix/OneWare.McpBridge/main/License.md"
+    }
+  ],
+  "links": [
+    {
+      "name": "Github",
+      "url": "https://github.com/timonix/OneWare.McpBridge"
+    }
+  ],
+  "sourceUrl": "https://github.com/timonix/OneWare.McpBridge/releases/download",
+  "versions": [
+    {
+      "version": "0.1.45",
+      "minStudioVersion": "1.0.45",
+      "targets": [
+        {
+          "target": "all"
+        }
+      ]
+    }
+  ]
+}
