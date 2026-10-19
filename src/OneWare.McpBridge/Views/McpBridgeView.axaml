@@ -1,0 +1,138 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:OneWare.McpBridge.ViewModels"
+             xmlns:services="clr-namespace:OneWare.McpBridge.Services"
+             xmlns:mcp="clr-namespace:OneWare.McpBridge.Mcp"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="250"
+             x:Class="OneWare.McpBridge.Views.McpBridgeView"
+             x:DataType="viewModels:McpBridgeViewModel">
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="header" Padding="{DynamicResource ThemePaddingSmall}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                    <Button Classes="secondary small" Content="Copy for Claude Code" Click="CopyClaudeCode_OnClick" />
+                    <Button Classes="secondary small" Content="Copy for OpenCode" Click="CopyOpenCode_OnClick" />
+                    <Button Classes="secondary small" Content="Copy generic JSON" Click="CopyGeneric_OnClick" />
+                    <ToggleButton Classes="secondary small" Content="Tools" IsChecked="{Binding ShowTools}" />
+                    <Button Classes="ghost small" Content="Clear log" Command="{Binding ClearCallsCommand}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Classes="secondary small" Command="{Binding ToggleServerCommand}">
+                        <Panel>
+                            <TextBlock Text="Start" IsVisible="{Binding !Bridge.IsRunning}" />
+                            <TextBlock Text="Stop" IsVisible="{Binding Bridge.IsRunning}" />
+                        </Panel>
+                    </Button>
+                    <TextBlock Text="{Binding Bridge.StatusText}" VerticalAlignment="Center" />
+                    <TextBlock Classes="caption" Text="Clients:" VerticalAlignment="Center" />
+                    <ItemsControl ItemsSource="{Binding Bridge.Clients}" VerticalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="mcp:McpClient">
+                                <Border Classes="badge small">
+                                    <TextBlock Text="{Binding Name}" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Activity.Confirmations}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="services:McpConfirmationRequest">
+                    <Border Classes="callout warning" Margin="4,4,4,0">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4"
+                                        VerticalAlignment="Center">
+                                <Button Classes="primary small" Content="Allow" Command="{Binding AllowCommand}" />
+                                <Button Classes="secondary small" Content="Allow for this session"
+                                        Command="{Binding AllowForSessionCommand}" />
+                                <Button Classes="danger small" Content="Deny" Command="{Binding DenyCommand}" />
+                            </StackPanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="semibold" Text="{Binding Header}" />
+                                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Border DockPanel.Dock="Right" Width="320" Classes="panel" Margin="0,4,4,4" IsVisible="{Binding ShowTools}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="8,6" Spacing="2">
+                    <TextBlock Classes="overline" Text="Served tools" />
+                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                               Text="Clients see changes when they reconnect." />
+                </StackPanel>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding ToolGroups}" Margin="4,0,4,4">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:McpToolGroupViewModel">
+                                <Expander HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                                    <Expander.Header>
+                                        <!-- A TextBlock, as string content would turn the "_" of "fpga_*" into an access key -->
+                                        <CheckBox IsChecked="{Binding IsEnabled}">
+                                            <TextBlock Text="{Binding Header}" />
+                                        </CheckBox>
+                                    </Expander.Header>
+                                    <ItemsControl ItemsSource="{Binding Tools}" IsEnabled="{Binding IsEnabled}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="viewModels:McpToolItemViewModel">
+                                                <CheckBox IsChecked="{Binding IsEnabled}"
+                                                          ToolTip.Tip="{Binding Description}">
+                                                    <TextBlock Classes="mono" Text="{Binding Name}" />
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Activity.Calls}" Margin="4">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="services:McpCallEntry">
+                        <Expander HorizontalAlignment="Stretch" Margin="0,0,0,2">
+                            <Expander.Header>
+                                <Grid ColumnDefinitions="70,120,*,70,24">
+                                    <TextBlock Grid.Column="0" Classes="muted mono"
+                                               Text="{Binding Started, StringFormat='{}{0:HH:mm:ss}'}" />
+                                    <TextBlock Grid.Column="1" Classes="muted" Text="{Binding Client}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2" Classes="mono" Text="{Binding Tool}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="3" Classes="muted" Text="{Binding Duration}"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Column="4" Text="{Binding StateText}" HorizontalAlignment="Center" />
+                                </Grid>
+                            </Expander.Header>
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="overline" Text="Arguments" />
+                                <SelectableTextBlock Classes="mono" Text="{Binding Arguments}" TextWrapping="Wrap" />
+                                <TextBlock Classes="overline" Text="Result" />
+                                <SelectableTextBlock Classes="mono" Text="{Binding Result}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+
+</UserControl>
